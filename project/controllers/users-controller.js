@@ -1,60 +1,44 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { getConnection } from '../db/connection.js'
-import { validationNamePassword } from '../validations/schemaUser.js'
+
 import { secret_key } from '../secret_key/secretKey.js'
+import { searchUser, createUser } from '../services/userServices.js'
 
 
-// função que procura um usuário pelo nome
-export const searchUser = async (name) => {
-    const conexao = await getConnection()
-    const [search] = await conexao.execute(
-        `select * from users
-        where name = ?`,
-        [name]
-    ) 
-    if (search.length === 0) {
-        return false
-    }
-    return search
-}
+
 
 // função para cadastrar usuário
-export const registerOfUser = async (req) => {
+export const registerOfUser = async (req, res, next) => {
     try {
         const conexao = await getConnection()
         const {name, password, type} = req.body
-        if (!await searchUser(name.toLowerCase())) {
-            let passwordStr = password.toString()
-            let typeRight = 'usuario'
-            if (type && type.trim()) {
-                typeRight = type.toLowerCase()
-            }
-            const validationnamepassword = await validationNamePassword({name, passwordStr})
-            if (validationnamepassword){
-                const passwordHash = await bcrypt.hash(password.toString(), 10) // criptografa a senha (10 vezes)
-                const [insert] = await conexao.execute(
-                    `insert into users (name, password, type)
-                    values (?, ?, ?)`,
-                    [name.toLowerCase(), passwordHash, typeRight]
-                )
-                console.log(`User "${name}" successfully registered!`)
-                return true
-            }
-            return false
-            }
-        else {
-            return false
+
+        const lowerCaseName = name.toLowerCase()
+
+        if (await searchUser(lowerCaseName)) {
+            return res.status(400).json({message: 'Duplicate username!'})
         }
+
+        let typeRight = 'usuario'
+
+        if (type && type.trim()) {
+            typeRight = type.toLowerCase()
+        }
+
+        const passwordHash = await bcrypt.hash(password.toString(), 10) // criptografa a senha (10 vezes)
+        const newUser = await createUser(lowerCaseName, passwordHash, typeRight)
+        return res.status(201).json({
+            message: `User '${lowerCaseName}' successfully registered!`,
+            user: newUser
+        })
         
     } catch (error) {
-        console.log('Error registering user ', error)
-        return false
+        next(error)
     }
 } 
 
 // função para o usuário fazer login
-export const loginOfUser = async (req) => {
+export const loginOfUser = async (req, res, next) => {
     try {
         const {name, password} = req.body  
         let passwordStr = password.toString()  

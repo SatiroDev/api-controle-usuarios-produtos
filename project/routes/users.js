@@ -1,8 +1,11 @@
 import express from 'express'
 import { registerOfUser, loginOfUser } from '../controllers/users-controller.js'
+import { validateUser } from '../validations/schemaUser.js'
 
 const router = express.Router()
 
+
+router.post('/register', validateUser)
 
 // caminho para o usuário se cadastrar
 router.post('/register', async (req, res) => {

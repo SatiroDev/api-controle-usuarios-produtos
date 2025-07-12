@@ -1,15 +1,24 @@
 import Joi from "joi";
 
 // frunção que faz uma validação de nome e senha (mínimo 4 caracteres)
-export const validationNamePassword = async (req) => {
-    const validation = Joi.object({
-        name: Joi.string().min(4).required(), 
-        passwordStr: Joi.string().min(4).required()
-    })
-    const { error } = validation.validate(req)
+
+const validation = Joi.object({
+    name: Joi.string().min(4).required(), 
+    password: Joi.alternatives().try(
+        Joi.string().min(4),
+        Joi.number().integer().$(1000)
+    ).required()
+})
+
+export const validateUser = (req, res, next) => {
+    const { error } = validation.validate(req.body)
     if (error) {
-        return  { error: error.details[0].message }
+        return res.status(400).json({
+            message: error.details[0].message
+        })
     }
-    return req
+    next()
 }
+
+
 
