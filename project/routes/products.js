@@ -12,17 +12,13 @@ router.get('/', validateToken, async (req, res) => {
 })
 
 // caminho para cadastrar um produto, apenas admins podem fazer isso!
-router.post('/', validateToken, onlyAdmin,  async (req, res) => {
-    const registereProduct = await registerProduct(req)
-    if (!registereProduct) {
-        return res.status(400).json({
-            status: 'Failure',
-            message: 'Error registering product!'
-        })
+router.post('/', validateToken, onlyAdmin,  async (req, res, next) => {
+    try {
+        await registerProduct(req)
+        res.status(201).json({message: `Product '${req.body.name}' added successfully!`})
+    } catch (error) {
+        next(error)
     }
-    return res.json({
-        status: 'Success',
-        message: `Product '${req.body.name}' added successfully!`})
 })
 
 // caminho para editar alguma informção de algum produto, pelo ID, somente admins conseguem fazer isso!

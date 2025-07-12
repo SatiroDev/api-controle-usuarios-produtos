@@ -13,26 +13,30 @@ export const listProducts = async () => {
 
 // função para cadastrar um produto
 export const registerProduct = async (req) => {
-    try {
-        const conexao = await getConnection()
-        const product = await validateProducts(req.body)
-        let available = "true"
-        if (product.stock_quantity === 0) available = "false"
-        if (product){
 
-            const [insert] = await conexao.execute(
-                `insert into products (name, price, category, stock_quantity, available)
-                values (?, ?, ?, ?, ?)`,
-                [product.name.toLowerCase(), product.price, product.category.toLowerCase(), product.stock_quantity, available]
-            )
-            console.log(`Product "${product.name}" successfully registered!`)
-            return true
-        }
-        return false
-    } catch (error) {
-        console.log('Error registering product ', error)
-        return false
+    const conexao = await getConnection()
+    const product = await validateProducts(req.body)
+
+    if (!product || !product.name || !product.category) {
+        const erro = new Error('Invalid product')
+        erro.status = 400
+        throw erro
     }
+
+
+    let available = "true"
+    if (product.stock_quantity === 0) available = "false"
+    if (product){
+
+        const [insert] = await conexao.execute(
+            `insert into products (name, price, category, stock_quantity, available)
+            values (?, ?, ?, ?, ?)`,
+            [product.name.toLowerCase(), product.price, product.category.toLowerCase(), product.stock_quantity, available]
+        )
+        console.log(`Product "${product.name}" successfully registered!`)
+        return true
+    }
+
 } 
 
 // função para atualizar informações de um produto
