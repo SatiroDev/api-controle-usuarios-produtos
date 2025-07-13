@@ -28,6 +28,7 @@ API de autenticação com **JWT**, feita com **Node.js** e **MySQL**. Permite o 
 ## 📁 Estrutura de Pastas
 
 ```bash
+logs/
 project/
 │
 ├── controllers/       # Lógica de usuários e produtos
@@ -35,6 +36,8 @@ project/
 ├── middleware/        # Middleware de autenticação e permissão
 ├── routes/            # Rotas de usuários e produtos
 ├── secret_key/        # Chave secreta para JWT
+├── services/          # Regras de negócio e funções principais da aplicação
+├── utils/             # Funções utilitárias genéricas e reutilizáveis
 ├── validations/       # Schemas Joi de validação
 ├── index.js           # Arquivo principal
 ```
