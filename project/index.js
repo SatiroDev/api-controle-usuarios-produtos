@@ -3,6 +3,7 @@ import routesUsers from './routes/users.js'
 import routesProducts from './routes/products.js'
 import { setupAllTables } from './db/index.js'
 import { middlewareErro } from './middleware/erroMiddleware.js'
+import { logger } from './utils/logger.js'
 
 const PORT = 3000 
 const app = express()
@@ -18,5 +19,5 @@ app.use(middlewareErro)
 
 app.listen(PORT, async () => {
     await setupAllTables()
-    console.log(`Server running on port ${PORT}`)
+    logger.info(`Server running on port ${PORT}`)
 })

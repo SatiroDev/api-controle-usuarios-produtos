@@ -2,6 +2,7 @@ import express from 'express'
 import { registerOfUser, loginOfUser } from '../controllers/users-controller.js'
 import { validateUser } from '../validations/schemaUser.js'
 
+
 const router = express.Router()
 
 // caminho para o usuário se cadastrar

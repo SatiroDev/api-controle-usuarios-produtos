@@ -1,5 +1,6 @@
 import { getConnection } from '../db/connection.js'
 import { createProduct, updateValues, getProductById, deleteProduct } from '../services/productServices.js'
+import { logger } from '../utils/logger.js'
 
 // frunção para listar todos os produtos que estejam cadastrados
 export const listProducts = async (req, res, next) => {
@@ -8,10 +9,12 @@ export const listProducts = async (req, res, next) => {
         const [selectTableProducts] = await conexao.execute(
             `select * from products`
         )
+        logger.info('Products registered in the database')
         return res.json({
             'Registered products': selectTableProducts
         })
     } catch (error) {
+        logger.error(error.message)
         const err = new Error(error.message)
         err.status = 500
         return next(err)
@@ -27,11 +30,13 @@ export const registerProduct = async (req, res, next) => {
         let available = "true"
         if (stock_quantity === 0) available = "false"
         const newProduct = await createProduct(name, price, category, stock_quantity, available)
+        logger.info(`Product '${name}' registered!`)
         return res.status(201).json({
             message: `Product '${name}' successfully registered!`,
             product: newProduct
         })
     } catch (error) {
+        logger.error(error.message)
         const err = new Error(error.message)
         err.status = 500
         return next(err)
@@ -49,14 +54,17 @@ export const deleteProductById = async (req, res, next) => {
         if (!getProductId) {
             const error = new Error(`Product with ID '${id}' not found!`)
             error.status = 404
+            logger.error(error.message)
             throw error
         }
         await deleteProduct(id)
+        logger.info(`Product with ID '${id}' deleted successfully!`)
         return res.json({
             error: false,
             message: 'Product deleted successfully!'
         })
     } catch (error) {
+        logger.error(error.message)
         const err = new Error(error.message)
         err.status = error.status || 500
         return next(err)
@@ -70,6 +78,7 @@ export const productData = async (req, res, next) => {
         if (!productId) {
             const error = new Error(`Product with ID '${productId}' not found!`)
             error.status = 404
+            logger.error(error.message)
             throw error
         }
         
@@ -105,15 +114,18 @@ export const productData = async (req, res, next) => {
         if (!field.length || field.length !== values.length) {
             const error = new Error("Fields and values provided for update are invalid!")
             error.status = 400
+            logger.error(error.message)
             throw error
             
         }
         await updateValues(field, values, productId)
+        logger.info(`product information with id '${productId}' updated!`)
         return res.json({
             error: false,
             message: `Product values with the ID '${productId}' updated successfully!`, 
         })
     } catch (error) {
+        logger.error(error.message)
         const err = new Error(error.message)
         err.status = error.status || 500
         return next(err)

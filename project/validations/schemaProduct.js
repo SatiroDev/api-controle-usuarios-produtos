@@ -1,5 +1,5 @@
 import Joi from "joi";
-
+import { logger } from "../utils/logger.js";
 // função que faz uma validação das informações obrigatórias do produto
 
 const validation = Joi.object({
@@ -15,6 +15,7 @@ const validation = Joi.object({
 export const validateProduct = (req, res, next) => {
     const { error } = validation.validate(req.body)
     if (error) {
+        logger.error(error.details[0].message)
         const err = new Error(error.details[0].message);
         err.status = 400
         return next(err)
