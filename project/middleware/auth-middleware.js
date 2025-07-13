@@ -7,30 +7,25 @@ export const validateToken = async (req, res, next) => {
         const token = authHeader?.split(' ')[1]
 
         if (!token) {
-            return res.status(401).json({
-                status: 'Failure',
-                message: 'Token not provided!'
-            })
+            const error = new Error('Token not provided!')
+            error.status = 400
+            return next(error)
         }
 
         jwt.verify(token, secret_key, (err, user) => {
             if (err) {
-                return res.status(403).json({
-                    status: 'Failure',
-                    message: 'Invalid or expired token!'
-                })
+                const error = new Error('Invalid or expired token!')
+                error.status = 403
+                return next(error)
             }
-
             req.user = user
-
             next()
         })
         
     } catch (error) {
-        return res.status(401).json({
-            status: 'Failure',
-            message: 'Token not provided or incorrectly formatted!'
-        })
+        const err = new Error('Token not provided or incorrectly formatted!')
+        err.status = 500
+        return next(err)
     }
     
 }

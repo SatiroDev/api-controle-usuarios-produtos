@@ -11,7 +11,7 @@ export const searchUser = async (name) => {
     if (search.length === 0) {
         return false
     }
-    return search
+    return {id: search[0].id, name: search[0].name, password: search[0].password, type: search[0].type}
 }
 
 // função que cria um novo usuário
@@ -22,6 +22,7 @@ export const createUser = async (name, password, type) => {
         values (?, ?, ?)`,
         [name, password, type]
     )
-    return {id: insert.insertId, name}
+    console.log(insert)
+    return {id: insert.insertId, name, password, type}
 }
     

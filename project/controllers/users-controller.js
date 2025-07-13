@@ -1,26 +1,23 @@
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 
+import { generateToken } from '../services/authService.js'
 import { secret_key } from '../secret_key/secretKey.js'
 import { searchUser, createUser } from '../services/userServices.js'
-
-
-
 
 // função para cadastrar usuário
 export const registerOfUser = async (req, res, next) => {
     try {
-        const conexao = await getConnection()
         const {name, password, type} = req.body
 
         const lowerCaseName = name.toLowerCase()
 
         if (await searchUser(lowerCaseName)) {
-            return res.status(400).json({message: 'Duplicate username!'})
+            const error = new Error('Duplicate username!')
+            error.status = 400
+            return next(error)
         }
 
         let typeRight = 'usuario'
-
         if (type && type.trim()) {
             typeRight = type.toLowerCase()
         }
@@ -33,7 +30,9 @@ export const registerOfUser = async (req, res, next) => {
         })
         
     } catch (error) {
-        next(error)
+        const err = new Error('An unexpected error occurred during registration!')
+        err.status = 500
+        return next(err)
     }
 } 
 
@@ -41,25 +40,23 @@ export const registerOfUser = async (req, res, next) => {
 export const loginOfUser = async (req, res, next) => {
     try {
         const {name, password} = req.body  
-        let passwordStr = password.toString()  
-        const userSearch = await searchUser(name)    
-        if (userSearch) {
-            const passwordNoHash = await bcrypt.compare(passwordStr, userSearch[0].password) // compara a password com a password criptografada
+        const user = await searchUser(name.toLowerCase())    
+        if (user) {
+            const passwordNoHash = await bcrypt.compare(password.toString(), user.password) // compara a password com a password criptografada
             if (passwordNoHash) {
-                return await generateToken(secret_key, userSearch, userSearch[0].type)
+                const token = await generateToken(secret_key, user)
+                return res.status(201).json({
+                    message: 'Authentication token created successfully!',
+                    token
+                })
             }
         }
-        
-        
-        return false
+        const error = new Error('Error logging in')
+        error.status = 400
+        return next(error)
     } catch (error) {
-        console.log('Error logging in ', error)
-        return false
+        const err = new Error('An unexpected error occurred during login!')
+        err.status = 500
+        return next(err)
     }
-}
-
-// função que gera um token
-export const generateToken = async (chave, user, type) => {
-    const token =  jwt.sign({id: user[0].id, name: user[0].name, type: type}, chave, {expiresIn: '1h'})
-    return {token}
 }
