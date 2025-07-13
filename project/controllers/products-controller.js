@@ -49,16 +49,16 @@ export const deleteProductById = async (req, res, next) => {
         if (!getProductId) {
             const error = new Error(`Product with ID '${id}' not found!`)
             error.status = 404
-            return next(error)
+            throw error
         }
-        const delProduct = await deleteProduct(id)
+        await deleteProduct(id)
         return res.json({
             error: false,
             message: 'Product deleted successfully!'
         })
     } catch (error) {
         const err = new Error(error.message)
-        err.status = 500
+        err.status = error.status || 500
         return next(err)
     }
 }

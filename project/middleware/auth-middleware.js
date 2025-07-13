@@ -9,22 +9,22 @@ export const validateToken = async (req, res, next) => {
         if (!token) {
             const error = new Error('Token not provided!')
             error.status = 400
-            return next(error)
+            throw error
         }
 
         jwt.verify(token, secret_key, (err, user) => {
             if (err) {
                 const error = new Error('Invalid or expired token!')
                 error.status = 403
-                return next(error)
+                throw error
             }
             req.user = user
             next()
         })
         
     } catch (error) {
-        const err = new Error('Token not provided or incorrectly formatted!')
-        err.status = 500
+        const err = new Error(error.message)
+        err.status = error.status || 500
         return next(err)
     }
     

@@ -14,7 +14,7 @@ export const registerOfUser = async (req, res, next) => {
         if (await searchUser(lowerCaseName)) {
             const error = new Error('Duplicate username!')
             error.status = 400
-            return next(error)
+            throw error
         }
 
         let typeRight = 'usuario'
@@ -25,13 +25,14 @@ export const registerOfUser = async (req, res, next) => {
         const passwordHash = await bcrypt.hash(password.toString(), 10) // criptografa a senha (10 vezes)
         const newUser = await createUser(lowerCaseName, passwordHash, typeRight)
         return res.status(201).json({
+            error: false,
             message: `User '${lowerCaseName}' successfully registered!`,
             user: newUser
         })
         
     } catch (error) {
-        const err = new Error('An unexpected error occurred during registration!')
-        err.status = 500
+        const err = new Error(error.message)
+        err.status = error.status || 500
         return next(err)
     }
 } 
@@ -46,6 +47,7 @@ export const loginOfUser = async (req, res, next) => {
             if (passwordNoHash) {
                 const token = await generateToken(secret_key, user)
                 return res.status(201).json({
+                    error: false,
                     message: 'Authentication token created successfully!',
                     token
                 })
@@ -53,10 +55,10 @@ export const loginOfUser = async (req, res, next) => {
         }
         const error = new Error('Error logging in')
         error.status = 400
-        return next(error)
+        throw error
     } catch (error) {
-        const err = new Error('An unexpected error occurred during login!')
-        err.status = 500
+        const err = new Error(error.message)
+        err.status = error.status || 500 
         return next(err)
     }
 }
