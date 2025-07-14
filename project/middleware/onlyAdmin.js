@@ -6,6 +6,7 @@ export const onlyAdmin = (req, res, next) => {
             error.status = 403
             throw error
         }
+        next()
     } catch (error) {
         const err = new Error(error.message)
         err.status = error.status || 500

@@ -73,10 +73,12 @@ export const deleteProductById = async (req, res, next) => {
 
 export const productData = async (req, res, next) => {
     try {
-        // chamada para verificar se o ID existe, e se existir retorna o id
-        const productId = await getProductById(req)
+        
+        const id = parseInt(req.params.id)
+        // chamada para verificar se o ID existe
+        const productId = await getProductById(id)
         if (!productId) {
-            const error = new Error(`Product with ID '${productId}' not found!`)
+            const error = new Error(`Product with ID '${id}' not found!`)
             error.status = 404
             logger.error(error.message)
             throw error
@@ -118,11 +120,12 @@ export const productData = async (req, res, next) => {
             throw error
             
         }
-        await updateValues(field, values, productId)
-        logger.info(`product information with id '${productId}' updated!`)
+
+        await updateValues(field, values, id)
+        logger.info(`product information with id '${id}' updated!`)
         return res.json({
             error: false,
-            message: `Product values with the ID '${productId}' updated successfully!`, 
+            message: `Product values with the ID '${id}' updated successfully!`, 
         })
     } catch (error) {
         logger.error(error.message)

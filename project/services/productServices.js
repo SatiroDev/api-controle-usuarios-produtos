@@ -12,15 +12,14 @@ export const createProduct = async (name, price, category, stock_quantity, avail
 }
 
 // função que verifica se um produto existe pelo ID dele
-export const getProductById = async (req) => {
-    const id = parseInt(req.params.id)
+export const getProductById = async (id) => {
     const conexao = await getConnection()
     const [consultationId] = await conexao.execute(
         `select * from products
         where id = ?`,
         [id]
     )
-    if (!consultationId) {
+    if (consultationId.length === 0) {
         return false
     }    
     return id

@@ -19,7 +19,6 @@ export const validateRefreshToken = async (req, res, next) => {
                 throw error
             }
             const newToken = generateToken(user)
-            console.log(newToken)
             logger.info('New authentication token acess created successfully!')
             return res.status(201).json({
                 error: false,

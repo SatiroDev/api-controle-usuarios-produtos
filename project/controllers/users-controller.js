@@ -48,8 +48,8 @@ export const loginOfUser = async (req, res, next) => {
         if (user) {
             const passwordNoHash = await bcrypt.compare(password.toString(), user.password) // compara a password com a password criptografada
             if (passwordNoHash) {
-                const token = await generateToken(secret_key, user)
-                const refreshToken = await generateRefreshToken(secret_refresh_key, user)
+                const token = generateToken(user)
+                const refreshToken = generateRefreshToken(user)
 
                 logger.info('Authentication token created successfully!')
                 return res.status(201).json({

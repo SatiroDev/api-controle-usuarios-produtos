@@ -55,6 +55,7 @@ DB_PASSWORD=sua_senha
 DB_NAME=jwt_auth_node
 
 SECRET_KEY=sua_chave_secreta_segura
+REFRESH_SECRET_KEY=sua_chave_secreta_de_refresh
 ```
 
 ---
