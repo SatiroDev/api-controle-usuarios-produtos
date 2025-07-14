@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 
-import { generateToken } from '../services/authService.js'
-import { secret_key } from '../secret_key/secretKey.js'
+import { generateToken, generateRefreshToken } from '../services/authService.js'
+import { secret_key, secret_refresh_key } from '../secret_key/secretKey.js'
 import { searchUser, createUser } from '../services/userServices.js'
 import { logger } from '../utils/logger.js';
 
@@ -49,11 +49,14 @@ export const loginOfUser = async (req, res, next) => {
             const passwordNoHash = await bcrypt.compare(password.toString(), user.password) // compara a password com a password criptografada
             if (passwordNoHash) {
                 const token = await generateToken(secret_key, user)
+                const refreshToken = await generateRefreshToken(secret_refresh_key, user)
+
                 logger.info('Authentication token created successfully!')
                 return res.status(201).json({
                     error: false,
                     message: 'Authentication token created successfully!',
-                    token
+                    token,
+                    refreshToken
                 })
             }
         }
