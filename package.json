@@ -1,0 +1,24 @@
+{
+  "name": "api-controle-usuarios-produtos",
+  "version": "1.0.0",
+  "description": "API de autenticação com **JWT**, feita com **Node.js** e **MySQL**. Permite o cadastro, login de usuários e operações com produtos — com proteção de rotas por nível de permissão (usuário comum ou admin).",
+  "main": "gerarCertificado.js",
+  "type": "module",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SatiroDev/api-controle-usuarios-produtos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SatiroDev/api-controle-usuarios-produtos/issues"
+  },
+  "homepage": "https://github.com/SatiroDev/api-controle-usuarios-produtos#readme",
+  "devDependencies": {
+    "supertest": "^7.1.3"
+  }
+}
