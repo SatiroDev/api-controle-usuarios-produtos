@@ -1,16 +1,21 @@
 import express from 'express'
+import { validateUser } from "../validation/schmUser.js"
+import { createUser, selectAllUsers, selectUserById } from '../controller/userController.js'
+
 
 const router = express.Router()
 
-router.post('/users')
+router.post('/users', validateUser, createUser)
 
-router.get('/users')
+router.get('/users', selectAllUsers)
 
-router.get('/users/:id')
+router.get('/users/:id', selectUserById)
 
 router.put('/users/:id')
 
-router.delete('/users:/id')
+// router.delete('/users:/id')
+
+export default router
 
 // Deletar usuário (DELETE /users/:id)
 // Criar usuário (POST /users)
