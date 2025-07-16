@@ -30,3 +30,10 @@ export const getUserById = async (id) => {
     }
     return {name: select[0].name}
 }
+
+export const updateUserById = async (id) => {
+    const conexao = await getConnection()
+    
+    const [update] = await conexao.execute(`
+        update table users `)
+}
