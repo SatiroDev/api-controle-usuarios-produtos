@@ -1,4 +1,4 @@
-// frunção que verifica se o req recebido é de um admin ou não
+// função que verifica se o req recebido é de um admin ou não
 export const onlyAdmin = (req, res, next) => {
     try {
         if (req.user.type.toLowerCase() !== 'admin') {
